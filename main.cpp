@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
 
     rmseFile.open ("./rmse.txt",std::ios_base::app);
     // matrixR is the file path of the matrix R
-    char const * matrixR=argv[4];
-    //char const * matrixR="./R/Rtest.txt";
+    // char const * matrixR=argv[4];
+    char const * matrixR="./Rtest.txt";
     // matrixL is the file path of the matrix L
-    char const * matrixL=argv[5];
-    
-    //char const * matrixL="./L/Ltest.txt";
+    // char const * matrixL=argv[5];
+    char const * matrixL="./Ltest.txt";
+
     // r is the number of truncated columns
     unsigned int r=atoi(argv[6]);
     //cout << r << endl;

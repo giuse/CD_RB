@@ -13,3 +13,9 @@
 *.exe
 *.out
 test
+
+# Results
+runTime.txt
+rmse.txt
+Ltest.txt
+Rtest.txt

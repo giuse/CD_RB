@@ -7,9 +7,10 @@ RM=rm
 SOURCES=centroidDecomp.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test
+EXEC_OPTS=input.txt 20 10
 
 all: $(SOURCES) $(EXECUTABLE)
-	./$(EXECUTABLE)
+	./$(EXECUTABLE) $(EXEC_OPTS)
 
 $(EXECUTABLE): $(OBJECTS)
 	# Switch the next row to inject gdb markers in the executable
