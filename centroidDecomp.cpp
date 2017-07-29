@@ -59,11 +59,11 @@ static int* findSignVector (std::vector< std::vector<double> > X, long n, long m
   return Z;
 }
 
-/* Calculate the norm 2 of a vector */
-static double norm2 (vector <double> &C)
+/* Calculate the norm 2 of an array */
+static double norm2 (double *C, int size)
 {
   double accum = 0.;
-  for (int i = 0; i < C.size(); ++i) {
+  for (int i=0; i<size; i++) {
     accum += C[i] * C[i];
   }
   return sqrt(accum);
@@ -85,7 +85,10 @@ void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, 
         //calculating the sign vector
         Z=findSignVector (X,n,m);
 
-        vector <double> C(m,0);
+        // vector <double> C(m,0);
+        double *C = (double*)malloc(m * sizeof(double));
+        for (int i=0; i<m; i++) C[i] = 0;
+
         for(int i=0;i<n;i++)
         {
             for (int j=0;j<m;j++)
@@ -96,7 +99,7 @@ void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, 
         //calculating R
         for (int i=0; i<m; i++)
         {
-            R[i][k]=C[i]/norm2(C);
+            R[i][k]=C[i]/norm2(C,m);
         }
         //calculating L
         for (int i=0;i<n;i++)
