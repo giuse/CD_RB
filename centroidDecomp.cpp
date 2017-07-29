@@ -15,13 +15,10 @@ using namespace std;
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
 static int* findSignVector (double **X, long n, long m)
 {
-  int pos = -1, val=0;
-  // vector<int>  Z(n,1);
-  int *Z = allocIntVec(n,1);
-  // vector<double> V(n,0);
-  double *V = allocDoubleVec(n,0);
-  // vector<double>  S(m, 0);
-  double *S = allocDoubleVec(m,0);
+  int pos = -1, val = 0;
+  int *Z = allocIntVec(n, 1);
+  double *V = allocDoubleVec(n, 0);
+  double *S = allocDoubleVec(m, 0);
 
   for (int i=0; i<m; i++)
     for (int j=0; j<n; j++)
@@ -68,93 +65,69 @@ static double norm2 (double *C, int size)
 
 /* The  centroid decomposition algorithm*/
 void centroidDecomp::centroidDec(double **X,  long n, long m,
-                                  long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
+                                  long truncated, const char* matrixR, const char* matrixL, std::ofstream &runTimeFile, std::ofstream &rmseFile)
 {
-  // std::vector< std::vector<double> > R(m, vector<double>(m));
   double **R = allocMat(m, m, 0);
-
-  // std::vector< std::vector<double> > L(n, vector<double>(m));
   double **L = allocMat(n, m, 0);
-
-  // vector<int>  Z(n,0);
   int *Z;
-
-  // std::vector< std::vector<double> > X1=X;
   double **X1 = X;
 
   long long elapsed_msec;
   auto startCD= std::chrono::high_resolution_clock::now();
+
   for (int k=0; k<truncated; k++)
   {
     //calculating the sign vector
     Z = findSignVector(X, n, m);
 
-    // vector <double> C(m,0);
-    double *C = (double*)malloc(m * sizeof(double));
-    for (int i=0; i<m; i++) C[i] = 0;
+    double *C = allocDoubleVec(m, 0);
 
     for(int i=0;i<n;i++)
-    {
       for (int j=0;j<m;j++)
-      {
-        C[j]+=X[i][j]*Z[i];
-      }
-    }
+        C[j] += X[i][j] * Z[i];
+
     //calculating R
     for (int i=0; i<m; i++)
-    {
-      R[i][k]=C[i]/norm2(C,m);
-    }
+      R[i][k] = C[i] / norm2(C, m);
+
     //calculating L
-    for (int i=0;i<n;i++)
-    {
-      L[i][k]=0;
+    for (int i=0; i<n; i++) {
+      L[i][k] = 0;
       for (int j=0; j<m; j++)
-      {
-        L[i][k]+=X[i][j]*R[j][k];
-      }
+        L[i][k] += X[i][j] * R[j][k];
     }
+
     //Calculating the new X
-    for (int i=0;i<n;i++)
-    {
-      for(int j=0;j<m;j++)
-      {
-        X[i][j]=X[i][j]-(L[i][k]*R[j][k]);
-      }
-    }
+    for (int i=0; i<n; i++)
+      for(int j=0; j<m; j++)
+        X[i][j] = X[i][j] - (L[i][k] * R[j][k]);
   }
 
   //End of the centroid  decomposition
   auto endCD = std::chrono::high_resolution_clock::now();
-  elapsed_msec=std::chrono::duration_cast<std::chrono::milliseconds>(endCD-startCD).count() ;
-  //file containing matrix R
-  ofstream myR;
-  myR.open (matrixR,std::ofstream::out | std::ofstream::trunc);
-  //file containing matrix L
-  ofstream myL;
-  myL.open (matrixL,std::ofstream::out | std::ofstream::trunc);
+  elapsed_msec = std::chrono::duration_cast<std::chrono::milliseconds>(endCD-startCD).count() ;
+
   //write R
+  ofstream myR;
+  myR.open(matrixR,std::ofstream::out | std::ofstream::trunc);
   write_matrix(&myR,R,m,m);
+  myR.close();
 
   //write L
+  ofstream myL;
+  myL.open(matrixL,std::ofstream::out | std::ofstream::trunc);
   write_matrix(&myL,L,n,m);
-  myR.close();
   myL.close();
-  //calculation the rmse with the Frobenhius norm
-  float check=0;
-  for (int k=0; k<m;k++)
-  {
-    for (int i=0;i<n; i++)
-    {
-      double  sum=0;
-      for (int j=0; j<m;j++)
-      {
-        sum+=L[i][j]*R[k][j];
-      }
-      if (abs(X1[i][k]-sum)>(1e-3))
-      {
-        check+=(X1[i][k]-sum)*(X1[i][k]-sum);
-      }
+
+  //calculation the rmse with the Frobenius norm
+  float check = 0;
+  for (int k=0; k<m; k++) {
+    for (int i=0;i<n; i++) {
+      double sum=0;
+      for (int j=0; j<m; j++)
+        sum += L[i][j] * R[k][j];
+      if (abs(X1[i][k] - sum) > 1e-3)
+        check += (X1[i][k] - sum) * (X1[i][k] - sum);
     }
   }
 
@@ -167,69 +140,51 @@ void centroidDecomp::centroidDec(double **X,  long n, long m,
 void centroidDecomp::write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
 {
     ostream_iterator<double> output_iterator(* is, ",");
-    for (int i = 0 ; i < nrows ; i++ ) {
-      // copy(matrix[i], matrix[i+ncols], output_iterator);
-      for (int j = 0 ; j < ncols ; j++ ) {
+    for (int i=0; i<nrows; i++) {
+      for (int j=0; j<ncols; j++) {
         *is << matrix[i][j];
         *is << ",";
       }
       *is << endl;
     }
 }
+
 // load matrix from an ascii text file.
 double** centroidDecomp::load_matrix(std::istream* is, int n, int m,
                                  const string& delim /*= ","*/)
 {
-    using namespace std;
+  string line, strnum;
+  double **matrix = allocMat(n, m, 0);
 
-    string      line;
-    string      strnum;
+  for (int j=0; j<n; j++) {
+    getline(*is, line);
+    // matrix->push_back(vector<double>());
+    int countCol = 0;
+    for (string::const_iterator i = line.begin(); i != line.end(); ++ i) {
+        if (countCol==m) break;
 
-    // clear first
-    // matrix->clear();
-    double **matrix = allocMat(n, m, 0);
-
-
-    for (int j=0;j<n;j++)
-
-    {
-        getline(*is, line);
-        // matrix->push_back(vector<double>());
-         int countCol=0;
-        for (string::const_iterator i = line.begin(); i != line.end(); ++ i)
-        {
-            if (countCol==m)
-            {
-                break;
-            }
-            // If i is not a delim, then append it to strnum
-            if (delim.find(*i) == string::npos)
-            {
-                strnum += *i;
-                if (i + 1 != line.end()) // If it's the last char, do not continue
-                    continue;
-            }
-            // if strnum is still empty, it means the previous char is also a
-            // delim (several delims appear together). Ignore this char.
-
-            if (strnum.empty())
-                continue;
-
-            // If we reach here, we got a number. Convert it to double.
-            double       number;
-
-            istringstream(strnum) >> number;
-            // matrix->back().push_back(number);
-            matrix[j][countCol] = number;
-            strnum.clear();
-            countCol++;
-
-
+        // If i is not a delim, then append it to strnum
+        if (delim.find(*i) == string::npos) {
+          strnum += *i;
+          // If it's the last char, do not continue
+          if (i + 1 != line.end()) continue;
         }
+        // if strnum is still empty, it means the previous char is also a
+        // delim (several delims appear together). Ignore this char.
 
+        if (strnum.empty()) continue;
+
+        // If we reach here, we got a number. Convert it to double.
+        double number;
+
+        istringstream(strnum) >> number;
+        // matrix->back().push_back(number);
+        matrix[j][countCol] = number;
+        strnum.clear();
+        countCol++;
     }
-
-    return matrix;
+  }
+  return matrix;
 }
 
 
