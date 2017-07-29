@@ -11,7 +11,7 @@ public:
     void load_matrix(std::istream* is, int n, int m,
                      std::vector< std::vector<double> >* matrix,
                      const std::string& delim = ",");
-    void write_matrix(std::ofstream* is,std::vector< std::vector<double> >* matrix);
+    void write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols);
 
 };
 

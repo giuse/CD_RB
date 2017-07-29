@@ -73,11 +73,23 @@ static double norm2 (double *C, int size)
 void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, long m,
                                   long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
 {
-  std::vector< std::vector<double> > R(m, vector<double>(m));
+  // std::vector< std::vector<double> > R(m, vector<double>(m));
+  double **R = (double**)malloc(m * sizeof(double*));
+  for (int i=0; i<m; i++) {
+    R[i] = (double*)malloc(m * sizeof(double));
+    for (int j=0; j<m; j++) R[i][j] = 0;
+  }
 
-  std::vector< std::vector<double> > L(n, vector<double>(m));
+  // std::vector< std::vector<double> > L(n, vector<double>(m));
+  double **L = (double**)malloc(n * sizeof(double*));
+  for (int i=0; i<n; i++) {
+    L[i] = (double*)malloc(m * sizeof(double));
+    for (int j=0; j<m; j++) L[i][j] = 0;
+  }
+
   // vector<int>  Z(n,0);
   int* Z;
+
   std::vector< std::vector<double> > X1=X;
 
   long long elapsed_msec;
@@ -132,10 +144,10 @@ void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, 
   ofstream myL;
   myL.open (matrixL,std::ofstream::out | std::ofstream::trunc);
   //write R
-  write_matrix(&myR,&R);
+  write_matrix(&myR,R,m,m);
 
   //write L
-  write_matrix(&myL,&L);
+  write_matrix(&myL,L,n,m);
   myR.close();
   myL.close();
   //calculation the rmse with the Frobenhius norm
@@ -162,16 +174,17 @@ void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, 
   cout << "time for cd " << "\t" <<elapsed_msec<<endl;
 }
 
-void centroidDecomp::write_matrix(std::ofstream* is,std::vector< std::vector<double> >* matrix)
+void centroidDecomp::write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
 {
     ostream_iterator<double> output_iterator(* is, ",");
-    for (int i = 0 ; i < matrix->size() ; i++ )
-    {
-
-        copy(matrix->at(i).begin(), matrix->at(i).end(), output_iterator);
-        *is << endl;
+    for (int i = 0 ; i < nrows ; i++ ) {
+      // copy(matrix[i], matrix[i+ncols], output_iterator);
+      for (int j = 0 ; j < ncols ; j++ ) {
+        *is << matrix[i][j];
+        *is << ",";
+      }
+      *is << endl;
     }
-
 }
 // load matrix from an ascii text file.
 void centroidDecomp::load_matrix(std::istream* is, int n, int m,
