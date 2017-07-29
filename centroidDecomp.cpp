@@ -68,97 +68,98 @@ static double norm2 (double *C, int size)
   }
   return sqrt(accum);
 }
+
 /* The  centroid decomposition algorithm*/
 void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, long m,
                                   long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
 {
-    std::vector< std::vector<double> > R(m, vector<double>(m));
-    std::vector< std::vector<double> > L(n, vector<double>(m));
-    // vector<int>  Z(n,0);
-    int* Z;
-    std::vector< std::vector<double> > X1=X;
+  std::vector< std::vector<double> > R(m, vector<double>(m));
 
-    long long elapsed_msec;
-    auto startCD= std::chrono::high_resolution_clock::now();
-    for (int k=0;k<truncated;k++)
+  std::vector< std::vector<double> > L(n, vector<double>(m));
+  // vector<int>  Z(n,0);
+  int* Z;
+  std::vector< std::vector<double> > X1=X;
+
+  long long elapsed_msec;
+  auto startCD= std::chrono::high_resolution_clock::now();
+  for (int k=0;k<truncated;k++)
+  {
+    //calculating the sign vector
+    Z=findSignVector (X,n,m);
+
+    // vector <double> C(m,0);
+    double *C = (double*)malloc(m * sizeof(double));
+    for (int i=0; i<m; i++) C[i] = 0;
+
+    for(int i=0;i<n;i++)
     {
-        //calculating the sign vector
-        Z=findSignVector (X,n,m);
-
-        // vector <double> C(m,0);
-        double *C = (double*)malloc(m * sizeof(double));
-        for (int i=0; i<m; i++) C[i] = 0;
-
-        for(int i=0;i<n;i++)
-        {
-            for (int j=0;j<m;j++)
-            {
-                C[j]+=X[i][j]*Z[i];
-            }
-        }
-        //calculating R
-        for (int i=0; i<m; i++)
-        {
-            R[i][k]=C[i]/norm2(C,m);
-        }
-        //calculating L
-        for (int i=0;i<n;i++)
-        {
-            L[i][k]=0;
-            for (int j=0; j<m; j++)
-            {
-                L[i][k]+=X[i][j]*R[j][k];
-            }
-        }
-        //Calculating the new X
-        for (int i=0;i<n;i++)
-        {
-            for(int j=0;j<m;j++)
-            {
-                X[i][j]=X[i][j]-(L[i][k]*R[j][k]);
-            }
-        }
-
+      for (int j=0;j<m;j++)
+      {
+        C[j]+=X[i][j]*Z[i];
+      }
     }
-
-    //End of the centroid  decomposition
-    auto endCD = std::chrono::high_resolution_clock::now();
-    elapsed_msec=std::chrono::duration_cast<std::chrono::milliseconds>(endCD-startCD).count() ;
-    //file containing matrix R
-    ofstream myR;
-    myR.open (matrixR,std::ofstream::out | std::ofstream::trunc);
-    //file containing matrix L
-    ofstream myL;
-    myL.open (matrixL,std::ofstream::out | std::ofstream::trunc);
-    //write R
-    write_matrix(&myR,&R);
-
-    //write L
-    write_matrix(&myL,&L);
-    myR.close();
-    myL.close();
-    //calculation the rmse with the Frobenhius norm
-    float check=0;
-    for (int k=0; k<m;k++)
+    //calculating R
+    for (int i=0; i<m; i++)
     {
-        for (int i=0;i<n; i++)
-        {
-            double  sum=0;
-            for (int j=0; j<m;j++)
-            {
-                sum+=L[i][j]*R[k][j];
-            }
-            if (abs(X1[i][k]-sum)>(1e-3))
-            {
-                check+=(X1[i][k]-sum)*(X1[i][k]-sum);
-            }
-        }
+      R[i][k]=C[i]/norm2(C,m);
     }
+    //calculating L
+    for (int i=0;i<n;i++)
+    {
+      L[i][k]=0;
+      for (int j=0; j<m; j++)
+      {
+        L[i][k]+=X[i][j]*R[j][k];
+      }
+    }
+    //Calculating the new X
+    for (int i=0;i<n;i++)
+    {
+      for(int j=0;j<m;j++)
+      {
+        X[i][j]=X[i][j]-(L[i][k]*R[j][k]);
+      }
+    }
+  }
 
-    //writing the result in the cdFile
-    runTimeFile << n << "\t" << truncated <<"\t"<< elapsed_msec<<endl;
-    rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
-    cout << "time for cd " << "\t" <<elapsed_msec<<endl;
+  //End of the centroid  decomposition
+  auto endCD = std::chrono::high_resolution_clock::now();
+  elapsed_msec=std::chrono::duration_cast<std::chrono::milliseconds>(endCD-startCD).count() ;
+  //file containing matrix R
+  ofstream myR;
+  myR.open (matrixR,std::ofstream::out | std::ofstream::trunc);
+  //file containing matrix L
+  ofstream myL;
+  myL.open (matrixL,std::ofstream::out | std::ofstream::trunc);
+  //write R
+  write_matrix(&myR,&R);
+
+  //write L
+  write_matrix(&myL,&L);
+  myR.close();
+  myL.close();
+  //calculation the rmse with the Frobenhius norm
+  float check=0;
+  for (int k=0; k<m;k++)
+  {
+    for (int i=0;i<n; i++)
+    {
+      double  sum=0;
+      for (int j=0; j<m;j++)
+      {
+        sum+=L[i][j]*R[k][j];
+      }
+      if (abs(X1[i][k]-sum)>(1e-3))
+      {
+        check+=(X1[i][k]-sum)*(X1[i][k]-sum);
+      }
+    }
+  }
+
+  //writing the result in the cdFile
+  runTimeFile << n << "\t" << truncated <<"\t"<< elapsed_msec<<endl;
+  rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
+  cout << "time for cd " << "\t" <<elapsed_msec<<endl;
 }
 
 void centroidDecomp::write_matrix(std::ofstream* is,std::vector< std::vector<double> >* matrix)
