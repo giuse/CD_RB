@@ -3,6 +3,7 @@
 #define centroidDecomp_hpp
 
 #include <stdio.h>
+#include "allocUtils.hpp" // init*vec, alloc*vec, allocmat
 
 class centroidDecomp
 {

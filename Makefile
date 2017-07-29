@@ -4,7 +4,7 @@ CFLAGS=-c -Wall -std=c++0x
 GDBFLAGS=-g
 LDFLAGS=
 RM=rm -f
-SOURCES=centroidDecomp.cpp main.cpp
+SOURCES=centroidDecomp.cpp allocUtils.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test
 EXEC_OPTS=input.txt 20 10

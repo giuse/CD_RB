@@ -17,8 +17,7 @@ static int* findSignVector (std::vector< std::vector<double> > X, long n, long m
 {
   int pos = -1, val=0;
   // vector<int>  Z(n,1);
-  int *Z = (int*)malloc(n * sizeof(int));
-  for (int i=0; i<n; i++) Z[i] = 1;
+  int *Z = allocIntVec(n,1);
   // vector<double> V(n,0);
   double *V = (double*)malloc(n * sizeof(double));
   for (int i=0; i<n; i++) V[i] = 0;
