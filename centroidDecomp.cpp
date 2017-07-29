@@ -62,7 +62,7 @@ static double norm2 (double *C, int size)
 }
 
 /* The  centroid decomposition algorithm*/
-void centroidDecomp::centroidDec(double **X,  long n, long m,
+void centroidDec(double **X,  long n, long m,
                                   long truncated, const char* matrixR, const char* matrixL, std::ofstream &runTimeFile, std::ofstream &rmseFile)
 {
   double **R = allocMat(m, m, 0);
@@ -126,7 +126,7 @@ void centroidDecomp::centroidDec(double **X,  long n, long m,
   rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
 }
 
-void centroidDecomp::write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
+void write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
 {
     ostream_iterator<double> output_iterator(* is, ",");
     for (int i=0; i<nrows; i++) {
@@ -139,7 +139,7 @@ void centroidDecomp::write_matrix(std::ofstream* is, double** matrix, int nrows,
 }
 
 // load matrix from an ascii text file.
-double** centroidDecomp::load_matrix(std::istream* is, int n, int m,
+double** load_matrix(std::istream* is, int n, int m,
                                  const string& delim /*= ","*/)
 {
   string line, strnum;
@@ -150,27 +150,26 @@ double** centroidDecomp::load_matrix(std::istream* is, int n, int m,
     // matrix->push_back(vector<double>());
     int countCol = 0;
     for (string::const_iterator i = line.begin(); i != line.end(); ++ i) {
-        if (countCol==m) break;
+      if (countCol==m) break;
 
-        // If i is not a delim, then append it to strnum
-        if (delim.find(*i) == string::npos) {
-          strnum += *i;
-          // If it's the last char, do not continue
-          if (i + 1 != line.end()) continue;
-        }
-        // if strnum is still empty, it means the previous char is also a
-        // delim (several delims appear together). Ignore this char.
+      // If i is not a delim, then append it to strnum
+      if (delim.find(*i) == string::npos) {
+        strnum += *i;
+        // If it's the last char, do not continue
+        if (i + 1 != line.end()) continue;
+      }
+      // if strnum is still empty, it means the previous char is also a
+      // delim (several delims appear together). Ignore this char.
+      if (strnum.empty()) continue;
 
-        if (strnum.empty()) continue;
+      // If we reach here, we got a number. Convert it to double.
+      double number;
 
-        // If we reach here, we got a number. Convert it to double.
-        double number;
-
-        istringstream(strnum) >> number;
-        // matrix->back().push_back(number);
-        matrix[j][countCol] = number;
-        strnum.clear();
-        countCol++;
+      istringstream(strnum) >> number;
+      // matrix->back().push_back(number);
+      matrix[j][countCol] = number;
+      strnum.clear();
+      countCol++;
     }
   }
   return matrix;

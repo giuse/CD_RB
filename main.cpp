@@ -22,7 +22,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 
-    centroidDecomp A;
     //  vector<vector<double> > matrix(n, vector<double>(m));
     //    double array1[n][m]={{2,-2},{0,3},{-4,2}};
 
@@ -40,7 +39,7 @@ int main(int argc, char *argv[])
     unsigned int m=atoi(argv[3]);
     //ifstream myfile("./Varying_n/input.txt");
     /* load the file into a matrix*/
-    double **matrix = A.load_matrix(&myfile, n, m);
+    double **matrix = load_matrix(&myfile, n, m);
 
 
     /* Check the number of rows*/
@@ -70,7 +69,7 @@ int main(int argc, char *argv[])
 
     //repeat the centroid decomposition 5 times in order to evaluate the average run time and rmse later
 
-        A.centroidDec(matrix,n,m,truncated,matrixR,matrixL,runTimeFile,rmseFile);
+        centroidDec(matrix,n,m,truncated,matrixR,matrixL,runTimeFile,rmseFile);
 
 
 
