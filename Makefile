@@ -13,6 +13,7 @@ RESULTS=Ltest.txt Rtest.txt rmse.txt runTime.txt
 # all: $(SOURCES) $(EXECUTABLE)
 all: clean $(SOURCES) $(EXECUTABLE)
 	./$(EXECUTABLE) $(EXEC_OPTS)
+	if cmp -s "Ltest.txt" "../CD_CPP/Ltest.txt"; then echo "Results match"; else echo "\n\n\t\tERROR: RESULTS DO NOT MATCH!!\n\n\n"; fi
 
 $(EXECUTABLE): $(OBJECTS)
 	# Switch the next row to inject gdb markers in the executable

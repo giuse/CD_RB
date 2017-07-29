@@ -13,74 +13,63 @@ using namespace std;
 
 
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
-static int* findSignVector ( std::vector< std::vector<double> > X, long n, long m)
+static int* findSignVector (std::vector< std::vector<double> > X, long n, long m)
 {
-    int pos = -1, val=0;
-    // vector<int>  Z(n,1);
-    int *Z = (int*)malloc(n * sizeof(int));
-    for (int i=0; i<n; i++) Z[i] = 1;
-    // vector<double> V(n,0);
-    double *V = (double*)malloc(n * sizeof(double));
-    for (int i=0; i<n; i++) V[i] = 0;
-    // vector<double>  S(m, 0);
-    double *S = (double*)malloc(m * sizeof(double));
+  int pos = -1, val=0;
+  // vector<int>  Z(n,1);
+  int *Z = (int*)malloc(n * sizeof(int));
+  for (int i=0; i<n; i++) Z[i] = 1;
+  // vector<double> V(n,0);
+  double *V = (double*)malloc(n * sizeof(double));
+  for (int i=0; i<n; i++) V[i] = 0;
+  // vector<double>  S(m, 0);
+  double *S = (double*)malloc(m * sizeof(double));
+  for (int i=0; i<m; i++) S[i] = 0;
+
+  for (int i=0; i<m; i++)
+    for (int j=0; j<n; j++)
+      S[i] += X[j][i];
+
+  for (int i=0; i<n; i++)
+    for (int j=0; j<m;j++)
+      V[i] += X[i][j] * (S[j] - X[i][j]);
+
+  int iteration=0;
+  do {
     for (int i=0; i<m; i++) S[i] = 0;
-
-    for ( int i=0; i<m; i++)
-      for ( int j=0; j<n; j++)
-        S[i] += X[j][i];
-
-    for ( int i=0; i<n; i++)
-      for ( int j=0; j<m;j++)
-        V[i] += X[i][j] * (S[j] - X[i][j]);
-
-    int iteration=0;
-    do
-    {
-        vector<double> S(m, 0);
-        if (pos!=-1)
-        {
-            Z[pos]*=-1;
-          for ( int i=0; i<n;i++ )
-
-            {
-                      if (i!=pos)
-                      {
-                                for ( int j=0; j<m;j++)
-                                {
-                                          V[i]-=2*X[i][j]*X[pos][j];
-                                }
-                      }
-            }
+    if (pos != -1) {
+      Z[pos] *= -1;
+      for (int i=0; i<n;i++ )
+        if (i != pos)
+          for (int j=0; j<m;j++)
+            V[i] -= 2 * X[i][j] * X[pos][j];
+    }
+    val = 0;
+    pos = -1;
+    for (int i=0; i<n; i++)
+      if (Z[i] * V[i] < 0)
+        if(abs(V[i]) > val) {
+          val = abs(V[i]);
+          pos = i;
         }
-        val=0;
-        pos=-1;
-        for ( int i=0; i<n; i++)
-        {
-            if (Z[i]*V[i]<0)
 
-                if(abs(V[i])>val)
-                {
-                    val=abs(V[i]);
-                    pos=i;
-                }
-        }
-        iteration++;
-    } while(pos!=-1);
+    iteration++;
+  } while(pos != -1);
 
-    return Z;
+  return Z;
 }
+
 /* Calculate the norm 2 of a vector */
 static double norm2 (vector <double> &C)
 {
-    double accum = 0.;
-    for ( int i = 0; i < C.size(); ++i) {
-        accum += C[i] * C[i];
-    }
-    return sqrt(accum);
+  double accum = 0.;
+  for (int i = 0; i < C.size(); ++i) {
+    accum += C[i] * C[i];
+  }
+  return sqrt(accum);
 }
 /* The  centroid decomposition algorithm*/
-void centroidDecomp::centroidDec( std::vector< std::vector<double> > X,  long n, long m,
+void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, long m,
                                   long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
 {
     std::vector< std::vector<double> > R(m, vector<double>(m));
@@ -172,7 +161,7 @@ void centroidDecomp::centroidDec( std::vector< std::vector<double> > X,  long n,
 void centroidDecomp::write_matrix(std::ofstream* is,std::vector< std::vector<double> >* matrix)
 {
     ostream_iterator<double> output_iterator(* is, ",");
-    for ( int i = 0 ; i < matrix->size() ; i++ )
+    for (int i = 0 ; i < matrix->size() ; i++ )
     {
 
         copy(matrix->at(i).begin(), matrix->at(i).end(), output_iterator);
@@ -193,7 +182,7 @@ void centroidDecomp::load_matrix(std::istream* is, int n, int m,
     // clear first
     matrix->clear();
 
-    for ( int j=0;j<n;j++)
+    for (int j=0;j<n;j++)
 
     {
         getline(*is, line);
