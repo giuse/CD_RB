@@ -13,7 +13,7 @@ using namespace std;
 
 
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
-static int* findSignVector (std::vector< std::vector<double> > X, long n, long m)
+static int* findSignVector (double **X, long n, long m)
 {
   int pos = -1, val=0;
   // vector<int>  Z(n,1);
@@ -67,7 +67,7 @@ static double norm2 (double *C, int size)
 }
 
 /* The  centroid decomposition algorithm*/
-void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, long m,
+void centroidDecomp::centroidDec(double **X,  long n, long m,
                                   long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
 {
   // std::vector< std::vector<double> > R(m, vector<double>(m));
@@ -77,16 +77,17 @@ void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, 
   double **L = allocMat(n, m, 0);
 
   // vector<int>  Z(n,0);
-  int* Z;
+  int *Z;
 
-  std::vector< std::vector<double> > X1=X;
+  // std::vector< std::vector<double> > X1=X;
+  double **X1 = X;
 
   long long elapsed_msec;
   auto startCD= std::chrono::high_resolution_clock::now();
-  for (int k=0;k<truncated;k++)
+  for (int k=0; k<truncated; k++)
   {
     //calculating the sign vector
-    Z=findSignVector (X,n,m);
+    Z = findSignVector(X, n, m);
 
     // vector <double> C(m,0);
     double *C = (double*)malloc(m * sizeof(double));
@@ -176,8 +177,7 @@ void centroidDecomp::write_matrix(std::ofstream* is, double** matrix, int nrows,
     }
 }
 // load matrix from an ascii text file.
-void centroidDecomp::load_matrix(std::istream* is, int n, int m,
-                                 std::vector< std::vector<double> >* matrix,
+double** centroidDecomp::load_matrix(std::istream* is, int n, int m,
                                  const string& delim /*= ","*/)
 {
     using namespace std;
@@ -186,13 +186,15 @@ void centroidDecomp::load_matrix(std::istream* is, int n, int m,
     string      strnum;
 
     // clear first
-    matrix->clear();
+    // matrix->clear();
+    double **matrix = allocMat(n, m, 0);
+
 
     for (int j=0;j<n;j++)
 
     {
         getline(*is, line);
-        matrix->push_back(vector<double>());
+        // matrix->push_back(vector<double>());
          int countCol=0;
         for (string::const_iterator i = line.begin(); i != line.end(); ++ i)
         {
@@ -217,7 +219,8 @@ void centroidDecomp::load_matrix(std::istream* is, int n, int m,
             double       number;
 
             istringstream(strnum) >> number;
-            matrix->back().push_back(number);
+            // matrix->back().push_back(number);
+            matrix[j][countCol] = number;
             strnum.clear();
             countCol++;
 
@@ -225,6 +228,8 @@ void centroidDecomp::load_matrix(std::istream* is, int n, int m,
         }
 
     }
+
+    return matrix;
 }
 
 

@@ -21,11 +21,11 @@ using namespace std;
 //unsigned int m=2;
 int main(int argc, char *argv[])
 {
-    
+
     centroidDecomp A;
     //  vector<vector<double> > matrix(n, vector<double>(m));
     //    double array1[n][m]={{2,-2},{0,3},{-4,2}};
-    
+
     //for (unsigned int i =0; i<n;i++)
     //{
     //for (unsigned int j=0;j<m;j++)
@@ -33,22 +33,21 @@ int main(int argc, char *argv[])
     //       (matrix[i])[j]=array1[i][j];
     //    }
     //  }
-   
-    
-    vector<vector<double> > matrix;
+
+
     ifstream myfile(argv[1]);
     unsigned int n=atoi(argv[2]);
     unsigned int m=atoi(argv[3]);
     //ifstream myfile("./Varying_n/input.txt");
     /* load the file into a matrix*/
-    A.load_matrix(&myfile,n,m, &matrix);
+    double **matrix = A.load_matrix(&myfile, n, m);
 
-   
+
     /* Check the number of rows*/
-    cout << "number of rows " << matrix.size()<<endl;
+    cout << "number of rows " << n << endl;
     /* Check the number of columns*/
-    cout<< "number of cols " <<matrix[1].size()<<endl;
-    
+    cout<< "number of cols " << m << endl;
+
     ofstream runTimeFile;
     /* runTime contains the run Time*/
 
@@ -68,12 +67,12 @@ int main(int argc, char *argv[])
     unsigned int r=atoi(argv[6]);
     //cout << r << endl;
     unsigned long truncated=m-r;
-    
+
     //repeat the centroid decomposition 5 times in order to evaluate the average run time and rmse later
-    
+
         A.centroidDec(matrix,n,m,truncated,matrixR,matrixL,runTimeFile,rmseFile);
 
-    
+
 
     rmseFile.close();
     runTimeFile.close();

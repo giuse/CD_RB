@@ -9,5 +9,6 @@ void initIntVec(int *vec, int size, int defval);
 int* allocIntVec(int size, int defval);
 double* allocDoubleVec(int size, double defval);
 double** allocMat(int nrows, int ncols, double defval);
+void initMat(double **mat, int nrows, int ncols, double defval);
 
 #endif

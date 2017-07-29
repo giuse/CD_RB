@@ -30,3 +30,8 @@ double** allocMat(int nrows, int ncols, double defval) {
   return ret;
 }
 
+void initMat(double **mat, int nrows, int ncols, double defval) {
+  for (int r=0; r<nrows; r++)
+    for (int c=0; c<ncols; c++)
+      mat[r][c] = defval;
+}

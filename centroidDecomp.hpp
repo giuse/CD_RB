@@ -8,9 +8,8 @@
 class centroidDecomp
 {
 public:
-    void centroidDec( std::vector< std::vector<double> > X, long n, long m, long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile);
-    void load_matrix(std::istream* is, int n, int m,
-                     std::vector< std::vector<double> >* matrix,
+    void centroidDec( double **X, long n, long m, long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile);
+    double** load_matrix(std::istream* is, int n, int m,
                      const std::string& delim = ",");
     void write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols);
 
