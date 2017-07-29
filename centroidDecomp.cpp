@@ -19,11 +19,9 @@ static int* findSignVector (std::vector< std::vector<double> > X, long n, long m
   // vector<int>  Z(n,1);
   int *Z = allocIntVec(n,1);
   // vector<double> V(n,0);
-  double *V = (double*)malloc(n * sizeof(double));
-  for (int i=0; i<n; i++) V[i] = 0;
+  double *V = allocDoubleVec(n,0);
   // vector<double>  S(m, 0);
-  double *S = (double*)malloc(m * sizeof(double));
-  for (int i=0; i<m; i++) S[i] = 0;
+  double *S = allocDoubleVec(m,0);
 
   for (int i=0; i<m; i++)
     for (int j=0; j<n; j++)
@@ -73,18 +71,10 @@ void centroidDecomp::centroidDec(std::vector< std::vector<double> > X,  long n, 
                                   long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
 {
   // std::vector< std::vector<double> > R(m, vector<double>(m));
-  double **R = (double**)malloc(m * sizeof(double*));
-  for (int i=0; i<m; i++) {
-    R[i] = (double*)malloc(m * sizeof(double));
-    for (int j=0; j<m; j++) R[i][j] = 0;
-  }
+  double **R = allocMat(m, m, 0);
 
   // std::vector< std::vector<double> > L(n, vector<double>(m));
-  double **L = (double**)malloc(n * sizeof(double*));
-  for (int i=0; i<n; i++) {
-    L[i] = (double*)malloc(m * sizeof(double));
-    for (int j=0; j<m; j++) L[i][j] = 0;
-  }
+  double **L = allocMat(n, m, 0);
 
   // vector<int>  Z(n,0);
   int* Z;
