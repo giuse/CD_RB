@@ -3,13 +3,15 @@ CC=g++
 CFLAGS=-c -Wall -std=c++0x
 GDBFLAGS=-g
 LDFLAGS=
-RM=rm
+RM=rm -f
 SOURCES=centroidDecomp.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test
 EXEC_OPTS=input.txt 20 10
+RESULTS=Ltest.txt Rtest.txt rmse.txt runTime.txt
 
-all: $(SOURCES) $(EXECUTABLE)
+# all: $(SOURCES) $(EXECUTABLE)
+all: clean $(SOURCES) $(EXECUTABLE)
 	./$(EXECUTABLE) $(EXEC_OPTS)
 
 $(EXECUTABLE): $(OBJECTS)
@@ -21,4 +23,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) $(OBJECTS) $(EXECUTABLE)
+	$(RM) $(OBJECTS) $(EXECUTABLE) $(RESULTS)
