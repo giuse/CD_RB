@@ -6,8 +6,6 @@
 #include <iterator>
 #include <fstream>
 #include <stdio.h>
-#include <chrono>
-#include <ctime>
 #include "centroidDecomp.hpp"
 using namespace std;
 
@@ -72,9 +70,6 @@ void centroidDecomp::centroidDec(double **X,  long n, long m,
   int *Z;
   double **X1 = X;
 
-  long long elapsed_msec;
-  auto startCD= std::chrono::high_resolution_clock::now();
-
   for (int k=0; k<truncated; k++)
   {
     //calculating the sign vector
@@ -103,10 +98,6 @@ void centroidDecomp::centroidDec(double **X,  long n, long m,
         X[i][j] = X[i][j] - (L[i][k] * R[j][k]);
   }
 
-  //End of the centroid  decomposition
-  auto endCD = std::chrono::high_resolution_clock::now();
-  elapsed_msec = std::chrono::duration_cast<std::chrono::milliseconds>(endCD-startCD).count() ;
-
   //write R
   ofstream myR;
   myR.open(matrixR,std::ofstream::out | std::ofstream::trunc);
@@ -132,9 +123,7 @@ void centroidDecomp::centroidDec(double **X,  long n, long m,
   }
 
   //writing the result in the cdFile
-  runTimeFile << n << "\t" << truncated <<"\t"<< elapsed_msec<<endl;
   rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
-  cout << "time for cd " << "\t" <<elapsed_msec<<endl;
 }
 
 void centroidDecomp::write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
