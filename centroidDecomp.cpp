@@ -1,12 +1,3 @@
-//
-//  centroidDecomp.cpp
-//  CentroidDecomp
-//
-//  Created by Ines Arous on 3/22/17.
-//  Copyright © 2017 Ines Arous. All rights reserved.
-//
-
-
 
 #include <iostream>
 #include <cmath>
@@ -21,39 +12,23 @@
 using namespace std;
 
 
-
-centroidDecomp::centroidDecomp()
-{
-    //ctor
-}
-
-centroidDecomp::~centroidDecomp()
-{
-    //dtor
-}
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
-static vector <int> findSignVector ( std::vector< std::vector<double> > X,unsigned long n,unsigned long m)
+static int* findSignVector ( std::vector< std::vector<double> > X, long n, long m)
 {
-    int pos=-1;
-    int val=0;
-    vector<int>  Z(n,1);
+    int pos = -1, val=0;
+    // vector<int>  Z(n,1);
+    int *Z = (int*)malloc(n * sizeof(int));
+    for (int i=0; i<n; i++) Z[i] = 1;
     vector<double> V(n,0);
     vector<double>  S(m, 0);
-    for (unsigned int i=0; i<m; i++)
-    {
-        for (unsigned int j=0; j<n; j++)
-        {
-            S[i]+=X[j][i];
-        }
-    }
-    
-    for (unsigned int i=0; i<n; i++)
-    {
-        for (unsigned int j=0; j<m;j++)
-        {
-            V[i]+=X[i][j]*(S[j]-X[i][j]);
-        }
-    }
+    for ( int i=0; i<m; i++)
+      for ( int j=0; j<n; j++)
+          S[i]+=X[j][i];
+
+    for ( int i=0; i<n; i++)
+      for ( int j=0; j<m;j++)
+        V[i]+=X[i][j]*(S[j]-X[i][j]);
+
     int iteration=0;
     do
     {
@@ -61,12 +36,12 @@ static vector <int> findSignVector ( std::vector< std::vector<double> > X,unsign
         if (pos!=-1)
         {
             Z[pos]*=-1;
-          for (unsigned int i=0; i<n;i++ )
-                            
+          for ( int i=0; i<n;i++ )
+
             {
                       if (i!=pos)
                       {
-                                for (unsigned int j=0; j<m;j++)
+                                for ( int j=0; j<m;j++)
                                 {
                                           V[i]-=2*X[i][j]*X[pos][j];
                                 }
@@ -75,10 +50,10 @@ static vector <int> findSignVector ( std::vector< std::vector<double> > X,unsign
         }
         val=0;
         pos=-1;
-        for (unsigned int i=0; i<n; i++)
+        for ( int i=0; i<n; i++)
         {
             if (Z[i]*V[i]<0)
-                
+
                 if(abs(V[i])>val)
                 {
                     val=abs(V[i]);
@@ -94,27 +69,28 @@ static vector <int> findSignVector ( std::vector< std::vector<double> > X,unsign
 static double norm2 (vector <double> &C)
 {
     double accum = 0.;
-    for (unsigned int i = 0; i < C.size(); ++i) {
+    for ( int i = 0; i < C.size(); ++i) {
         accum += C[i] * C[i];
     }
     return sqrt(accum);
 }
 /* The  centroid decomposition algorithm*/
-void centroidDecomp::centroidDec( std::vector< std::vector<double> > X, unsigned long n,unsigned long m,
-                                 unsigned long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
+void centroidDecomp::centroidDec( std::vector< std::vector<double> > X,  long n, long m,
+                                  long truncated,const char* matrixR,const char* matrixL,std::ofstream &runTimeFile,std::ofstream &rmseFile)
 {
     std::vector< std::vector<double> > R(m, vector<double>(m));
     std::vector< std::vector<double> > L(n, vector<double>(m));
-    vector<int>  Z(n,0);
+    // vector<int>  Z(n,0);
+    int* Z;
     std::vector< std::vector<double> > X1=X;
-    
+
     long long elapsed_msec;
     auto startCD= std::chrono::high_resolution_clock::now();
     for (int k=0;k<truncated;k++)
     {
         //calculating the sign vector
         Z=findSignVector (X,n,m);
-        
+
         vector <double> C(m,0);
         for(int i=0;i<n;i++)
         {
@@ -145,9 +121,9 @@ void centroidDecomp::centroidDec( std::vector< std::vector<double> > X, unsigned
                 X[i][j]=X[i][j]-(L[i][k]*R[j][k]);
             }
         }
-        
+
     }
-    
+
     //End of the centroid  decomposition
     auto endCD = std::chrono::high_resolution_clock::now();
     elapsed_msec=std::chrono::duration_cast<std::chrono::milliseconds>(endCD-startCD).count() ;
@@ -159,7 +135,7 @@ void centroidDecomp::centroidDec( std::vector< std::vector<double> > X, unsigned
     myL.open (matrixL,std::ofstream::out | std::ofstream::trunc);
     //write R
     write_matrix(&myR,&R);
-  
+
     //write L
     write_matrix(&myL,&L);
     myR.close();
@@ -181,7 +157,7 @@ void centroidDecomp::centroidDec( std::vector< std::vector<double> > X, unsigned
             }
         }
     }
-    
+
     //writing the result in the cdFile
     runTimeFile << n << "\t" << truncated <<"\t"<< elapsed_msec<<endl;
     rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
@@ -191,33 +167,33 @@ void centroidDecomp::centroidDec( std::vector< std::vector<double> > X, unsigned
 void centroidDecomp::write_matrix(std::ofstream* is,std::vector< std::vector<double> >* matrix)
 {
     ostream_iterator<double> output_iterator(* is, ",");
-    for (unsigned int i = 0 ; i < matrix->size() ; i++ )
+    for ( int i = 0 ; i < matrix->size() ; i++ )
     {
-        
+
         copy(matrix->at(i).begin(), matrix->at(i).end(), output_iterator);
         *is << endl;
     }
-    
+
 }
 // load matrix from an ascii text file.
-void centroidDecomp::load_matrix(std::istream* is,unsigned int n,unsigned int m,
+void centroidDecomp::load_matrix(std::istream* is, int n, int m,
                                  std::vector< std::vector<double> >* matrix,
                                  const string& delim /*= ","*/)
 {
     using namespace std;
-    
+
     string      line;
     string      strnum;
-    
+
     // clear first
     matrix->clear();
 
-    for (unsigned int j=0;j<n;j++)
-    
+    for ( int j=0;j<n;j++)
+
     {
         getline(*is, line);
         matrix->push_back(vector<double>());
-        unsigned int countCol=0;
+         int countCol=0;
         for (string::const_iterator i = line.begin(); i != line.end(); ++ i)
         {
             if (countCol==m)
@@ -233,19 +209,19 @@ void centroidDecomp::load_matrix(std::istream* is,unsigned int n,unsigned int m,
             }
             // if strnum is still empty, it means the previous char is also a
             // delim (several delims appear together). Ignore this char.
-                 
+
             if (strnum.empty())
                 continue;
-            
+
             // If we reach here, we got a number. Convert it to double.
             double       number;
-            
+
             istringstream(strnum) >> number;
             matrix->back().push_back(number);
             strnum.clear();
             countCol++;
 
- 
+
         }
 
     }
