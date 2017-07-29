@@ -63,7 +63,7 @@ static double norm2 (double *C, int size)
 
 /* The  centroid decomposition algorithm*/
 void centroidDec(double **X,  long n, long m,
-                                  long truncated, const char* matrixR, const char* matrixL, std::ofstream &runTimeFile, std::ofstream &rmseFile)
+                                  long truncated, const char* matrixR, const char* matrixL, std::ofstream &rmseFile)
 {
   double **R = allocMat(m, m, 0);
   double **L = allocMat(n, m, 0);
