@@ -2,7 +2,8 @@
 #ifndef centroidDecomp_hpp
 #define centroidDecomp_hpp
 
-#include <stdio.h>
+#include <fstream>
+
 #include "allocUtils.hpp" // init*Vec, alloc*Vec, allocMat, copyMat
 
 void centroidDec( double **X, int n, int m, int truncated,

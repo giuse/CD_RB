@@ -1,11 +1,11 @@
 
-#include <iostream>
+// #include <iostream>
 #include <cmath>
-#include <vector>
+// #include <vector>
 #include <sstream>
 #include <iterator>
 #include <fstream>
-#include <stdio.h>
+// #include <stdio.h>
 #include "centroidDecomp.hpp"
 using namespace std;
 
@@ -125,8 +125,6 @@ void centroidDec(double **X,  int n, int m,
     }
   }
 
-  //writing the result in the cdFile
-  rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
   free(R);
   free(L);
 }

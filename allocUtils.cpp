@@ -1,7 +1,6 @@
 // alloc utilities :( OMG I definitely did not miss C...
 
-#include <cstdlib>
-using std::malloc;
+#include <stdlib.h> // malloc, free
 
 void initDoubleVec(double *vec, int size, double defval) {
   for (int i=0; i<size; i++) vec[i] = defval;
