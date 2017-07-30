@@ -2,7 +2,7 @@
 #ifndef centroidDecomp_hpp
 #define centroidDecomp_hpp
 
-#include <fstream>
+#include <stdlib.h> // atoi, free
 
 #include "allocUtils.hpp" // init*Vec, alloc*Vec, allocMat, copyMat
 

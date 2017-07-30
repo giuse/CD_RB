@@ -1,11 +1,7 @@
+#include <math.h> // fabs
 
-// #include <iostream>
-#include <cmath>
-// #include <vector>
 #include <sstream>
-#include <iterator>
 #include <fstream>
-// #include <stdio.h>
 #include "centroidDecomp.hpp"
 using namespace std;
 
@@ -40,8 +36,8 @@ static int* findSignVector (double **X, int n, int m)
     pos = -1;
     for (int i=0; i<n; i++)
       if (Z[i] * V[i] < 0)
-        if(abs(V[i]) > val) {
-          val = abs(V[i]);
+        if(fabs(V[i]) > val) {
+          val = fabs(V[i]);
           pos = i;
         }
 
@@ -116,7 +112,7 @@ void centroidDec(double **X,  int n, int m, int truncated)
       double sum=0;
       for (int j=0; j<m; j++)
         sum += L[i][j] * R[k][j];
-      if (abs(X1[i][k] - sum) > 1e-3)
+      if (fabs(X1[i][k] - sum) > 1e-3)
         check += (X1[i][k] - sum) * (X1[i][k] - sum);
     }
   }
@@ -129,7 +125,6 @@ void write_matrix(const char *fname, double** matrix, int nrows, int ncols)
 {
   ofstream is;
   is.open(fname, ofstream::out | ofstream::trunc);
-  ostream_iterator<double> output_iterator(is, ",");
   for (int i=0; i<nrows; i++) {
     for (int j=0; j<ncols; j++) {
       is << matrix[i][j];
