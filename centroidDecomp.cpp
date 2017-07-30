@@ -70,7 +70,8 @@ void centroidDec(double **X,  long n, long m,
   double **R = allocMat(m, m, 0);
   double **L = allocMat(n, m, 0);
   int *Z;
-  double **X1 = X;
+
+  double **X1 = copyMat(X, n, m);
 
   for (int k=0; k<truncated; k++)
   {

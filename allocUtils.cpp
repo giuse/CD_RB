@@ -30,8 +30,10 @@ double** allocMat(int nrows, int ncols, double defval) {
   return ret;
 }
 
-void initMat(double **mat, int nrows, int ncols, double defval) {
+double** copyMat(double **orig, int nrows, int ncols) {
+  double **ret = allocMat(nrows, ncols, 0);
   for (int r=0; r<nrows; r++)
     for (int c=0; c<ncols; c++)
-      mat[r][c] = defval;
+      ret[r][c] = orig[r][c];
+  return ret;
 }

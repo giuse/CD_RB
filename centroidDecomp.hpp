@@ -3,7 +3,7 @@
 #define centroidDecomp_hpp
 
 #include <stdio.h>
-#include "allocUtils.hpp" // init*vec, alloc*vec, allocmat
+#include "allocUtils.hpp" // init*Vec, alloc*Vec, allocMat, copyMat
 
 void centroidDec( double **X, long n, long m, long truncated,
                   const char* matrixR, const char* matrixL,
