@@ -1,18 +1,13 @@
 
-#include <fstream>
 #include "centroidDecomp.hpp"
-
-using namespace std;
 
 int main(int argc, char *argv[])
 {
 
-  ifstream myfile(argv[1]);
   int n=atoi(argv[2]);
   int m=atoi(argv[3]);
   /* load the file into a matrix*/
-  double **matrix = load_matrix(&myfile, n, m);
-
+  double **matrix = load_matrix(argv[1], n, m);
 
   // matrixR is the file path of the matrix R
   char const * matrixR="./Rtest.txt";
@@ -24,10 +19,10 @@ int main(int argc, char *argv[])
   int truncated = m - r;
 
   //repeat the centroid decomposition 5 times in order to evaluate the average run time and rmse later
-  centroidDec(matrix, n, m, truncated, matrixR, matrixL, rmseFile);
+  centroidDec(matrix, n, m, truncated, matrixR, matrixL);
 
-  myfile.close();
   // rmseFile.close();
+  // myfile.close();
   free(matrix);
   return 0;
 }

@@ -64,8 +64,8 @@ static double norm2 (double *C, int size)
 }
 
 /* The  centroid decomposition algorithm*/
-void centroidDec(double **X,  int n, int m,
-                                  int truncated, const char* matrixR, const char* matrixL, std::ofstream &rmseFile)
+void centroidDec(double **X,  int n, int m, int truncated,
+                 const char* matrixR, const char* matrixL)
 {
   double **R = allocMat(m, m, 0);
   double **L = allocMat(n, m, 0);
@@ -101,17 +101,9 @@ void centroidDec(double **X,  int n, int m,
         X[i][j] = X[i][j] - (L[i][k] * R[j][k]);
   }
 
-  //write R
-  ofstream myR;
-  myR.open(matrixR,std::ofstream::out | std::ofstream::trunc);
-  write_matrix(&myR,R,m,m);
-  myR.close();
-
-  //write L
-  ofstream myL;
-  myL.open(matrixL,std::ofstream::out | std::ofstream::trunc);
-  write_matrix(&myL,L,n,m);
-  myL.close();
+  //write R and L
+  write_matrix(matrixR, R, m, m);
+  write_matrix(matrixL, L, n, m);
 
   //calculation the rmse with the Frobenius norm
   float check = 0;
@@ -129,27 +121,32 @@ void centroidDec(double **X,  int n, int m,
   free(L);
 }
 
-void write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
+void write_matrix(const char *fname, double** matrix, int nrows, int ncols)
 {
-    ostream_iterator<double> output_iterator(* is, ",");
-    for (int i=0; i<nrows; i++) {
-      for (int j=0; j<ncols; j++) {
-        *is << matrix[i][j];
-        *is << ",";
-      }
-      *is << endl;
+  ofstream is;
+  is.open(fname, ofstream::out | ofstream::trunc);
+  ostream_iterator<double> output_iterator(is, ",");
+  for (int i=0; i<nrows; i++) {
+    for (int j=0; j<ncols; j++) {
+      is << matrix[i][j];
+      is << ",";
     }
+    is << endl;
+  }
+  is.close();
 }
 
 // load matrix from an ascii text file.
-double** load_matrix(std::istream* is, int n, int m,
-                                 const string& delim /*= ","*/)
+double** load_matrix(const char *fname, int n, int m)
 {
+  ifstream is(fname);
+  const string delim = ",";
+
   string line, strnum;
   double **matrix = allocMat(n, m, 0);
 
   for (int j=0; j<n; j++) {
-    getline(*is, line);
+    getline(is, line);
     // matrix->push_back(vector<double>());
     int countCol = 0;
     for (string::const_iterator i = line.begin(); i != line.end(); ++ i) {
@@ -175,6 +172,7 @@ double** load_matrix(std::istream* is, int n, int m,
       countCol++;
     }
   }
+  is.close();
   return matrix;
 }
 
