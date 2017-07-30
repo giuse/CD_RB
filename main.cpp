@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 
   rmseFile.close();
   myfile.close();
+  free(matrix);
   return 0;
 }
 

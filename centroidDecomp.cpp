@@ -48,6 +48,8 @@ static int* findSignVector (double **X, long n, long m)
     iteration++;
   } while(pos != -1);
 
+  free(V);
+  free(S);
   return Z;
 }
 
@@ -124,6 +126,8 @@ void centroidDec(double **X,  long n, long m,
 
   //writing the result in the cdFile
   rmseFile << n << "\t" << truncated <<"\t"<<  "\t" << sqrt(check) << endl;
+  free(R);
+  free(L);
 }
 
 void write_matrix(std::ofstream* is, double** matrix, int nrows, int ncols)
