@@ -8,12 +8,12 @@ SOURCES=centroidDecomp.cpp allocUtils.cpp main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test
 EXEC_OPTS=input.txt 20 10
-RESULTS=Ltest.txt Rtest.txt rmse.txt runTime.txt
+RESULTS=Ltest.txt Rtest.txt
 
 # all: $(SOURCES) $(EXECUTABLE)
 all: clean $(SOURCES) $(EXECUTABLE)
 	./$(EXECUTABLE) $(EXEC_OPTS)
-	if cmp -s "Ltest.txt" "../CD_CPP/Ltest.txt"; then echo "Results match"; else echo "\n\n\t\tERROR: RESULTS DO NOT MATCH!!\n\n\n"; fi
+	if cmp -s "Ltest.txt" "Ltrg.txt" && cmp -s "Rtest.txt" "Rtrg.txt"; then echo "Results match"; else echo "\n\n\t\tERROR: RESULTS DO NOT MATCH!!\n\n\n"; fi
 
 $(EXECUTABLE): $(OBJECTS)
 	# Switch the next row to inject gdb markers in the executable
