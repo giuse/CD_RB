@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
 {
 
   ifstream myfile(argv[1]);
-  unsigned int n=atoi(argv[2]);
-  unsigned int m=atoi(argv[3]);
   //ifstream myfile("./Varying_n/input.txt");
+  int n=atoi(argv[2]);
+  int m=atoi(argv[3]);
   /* load the file into a matrix*/
   double **matrix = load_matrix(&myfile, n, m);
 
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
   char const * matrixL="./Ltest.txt";
 
   // r is the number of truncated columns
-  unsigned int r = atoi(argv[6]);
-  unsigned long truncated = m - r;
+  int r = atoi(argv[6]);
+  int truncated = m - r;
 
   //repeat the centroid decomposition 5 times in order to evaluate the average run time and rmse later
   centroidDec(matrix, n, m, truncated, matrixR, matrixL, rmseFile);

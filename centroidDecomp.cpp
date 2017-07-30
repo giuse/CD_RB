@@ -11,7 +11,7 @@ using namespace std;
 
 
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
-static int* findSignVector (double **X, long n, long m)
+static int* findSignVector (double **X, int n, int m)
 {
   int pos = -1, val = 0;
   int *Z = allocIntVec(n, 1);
@@ -64,8 +64,8 @@ static double norm2 (double *C, int size)
 }
 
 /* The  centroid decomposition algorithm*/
-void centroidDec(double **X,  long n, long m,
-                                  long truncated, const char* matrixR, const char* matrixL, std::ofstream &rmseFile)
+void centroidDec(double **X,  int n, int m,
+                                  int truncated, const char* matrixR, const char* matrixL, std::ofstream &rmseFile)
 {
   double **R = allocMat(m, m, 0);
   double **L = allocMat(n, m, 0);
