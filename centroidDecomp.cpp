@@ -7,38 +7,38 @@ using namespace std;
 
 
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
-static int* findSignVector (double **X, int n, int m)
+static int* findSignVector (double **X, int nrows, int ncols)
 {
   int pos = -1, val = 0;
-  int *Z = allocIntVec(n, 1);
-  double *V = allocDoubleVec(n, 0);
-  double *S = allocDoubleVec(m, 0);
+  int *Z = allocIntVec(nrows, 1);
+  double *V = allocDoubleVec(nrows, 0);
+  double *S = allocDoubleVec(ncols, 0);
 
-  for (int i=0; i<m; i++)
-    for (int j=0; j<n; j++)
-      S[i] += X[j][i];
+  for (int r=0; r<nrows; r++)
+    for (int c=0; c<ncols; c++)
+      S[c] += X[r][c];
 
-  for (int i=0; i<n; i++)
-    for (int j=0; j<m;j++)
-      V[i] += X[i][j] * (S[j] - X[i][j]);
+  for (int r=0; r<nrows; r++)
+    for (int c=0; c<ncols;c++)
+      V[r] += X[r][c] * (S[c] - X[r][c]);
 
   int iteration=0;
   do {
-    for (int i=0; i<m; i++) S[i] = 0;
+    for (int c=0; c<ncols; c++) S[c] = 0;
     if (pos != -1) {
       Z[pos] *= -1;
-      for (int i=0; i<n;i++ )
-        if (i != pos)
-          for (int j=0; j<m;j++)
-            V[i] -= 2 * X[i][j] * X[pos][j];
+      for (int r=0; r<nrows;r++ )
+        if (r != pos)
+          for (int c=0; c<ncols;c++)
+            V[r] -= 2 * X[r][c] * X[pos][c];
     }
     val = 0;
     pos = -1;
-    for (int i=0; i<n; i++)
-      if (Z[i] * V[i] < 0)
-        if(fabs(V[i]) > val) {
-          val = fabs(V[i]);
-          pos = i;
+    for (int r=0; r<nrows; r++)
+      if (Z[r] * V[r] < 0)
+        if(fabs(V[r]) > val) {
+          val = fabs(V[r]);
+          pos = r;
         }
 
     iteration++;
@@ -50,72 +50,72 @@ static int* findSignVector (double **X, int n, int m)
 }
 
 /* Calculate the norm 2 of an array */
-static double norm2 (double *C, int size)
-{
-  double accum = 0.;
+static double norm2 (double *ary, int size) {
+  double acc = 0;
   for (int i=0; i<size; i++) {
-    accum += C[i] * C[i];
+    acc += ary[i] * ary[i];
   }
-  return sqrt(accum);
+  return sqrt(acc);
 }
 
-/* The  centroid decomposition algorithm*/
-void centroidDec(double **X,  int n, int m, int truncated)
+/* The centroid decomposition algorithm*/
+void centroidDec(double **X,  int nrows, int ncols, int truncated)
 {
-  // matrixR is the file path of the matrix R
+  // results file paths (for testing)
   char const * matrixR="./Rtest.txt";
-  // matrixL is the file path of the matrix L
   char const * matrixL="./Ltest.txt";
 
-  double **R = allocMat(m, m, 0);
-  double **L = allocMat(n, m, 0);
+  double **R = allocMat(ncols, ncols, 0);
+  double **L = allocMat(nrows, ncols, 0);
   int *Z;
 
-  double **X1 = copyMat(X, n, m);
+  double **X1 = copyMat(X, nrows, ncols);
 
-  for (int k=0; k<truncated; k++)
+  for (int t=0; t<truncated; t++)
   {
     //calculating the sign vector
-    Z = findSignVector(X, n, m);
+    Z = findSignVector(X, nrows, ncols);
 
-    double *C = allocDoubleVec(m, 0);
+    double *C = allocDoubleVec(ncols, 0);
 
-    for(int i=0;i<n;i++)
-      for (int j=0;j<m;j++)
-        C[j] += X[i][j] * Z[i];
+    for(int r=0;r<nrows;r++)
+      for (int c=0;c<ncols;c++)
+        C[c] += X[r][c] * Z[r];
 
     //calculating R
-    for (int i=0; i<m; i++)
-      R[i][k] = C[i] / norm2(C, m);
+    for (int c=0; c<ncols; c++)
+      R[c][t] = C[c] / norm2(C, ncols);
 
     //calculating L
-    for (int i=0; i<n; i++) {
-      L[i][k] = 0;
-      for (int j=0; j<m; j++)
-        L[i][k] += X[i][j] * R[j][k];
+    for (int r=0; r<nrows; r++) {
+      L[r][t] = 0;
+      for (int c=0; c<ncols; c++)
+        L[r][t] += X[r][c] * R[c][t];
     }
 
     //Calculating the new X
-    for (int i=0; i<n; i++)
-      for(int j=0; j<m; j++)
-        X[i][j] = X[i][j] - (L[i][k] * R[j][k]);
+    for (int r=0; r<nrows; r++)
+      for(int c=0; c<ncols; c++)
+        X[r][c] = X[r][c] - (L[r][t] * R[c][t]);
   }
 
   //write R and L
-  write_matrix(matrixR, R, m, m);
-  write_matrix(matrixL, L, n, m);
+  write_matrix(matrixR, R, ncols, ncols);
+  write_matrix(matrixL, L, nrows, ncols);
 
   //calculation the rmse with the Frobenius norm
-  float check = 0;
-  for (int k=0; k<m; k++) {
-    for (int i=0;i<n; i++) {
-      double sum=0;
-      for (int j=0; j<m; j++)
-        sum += L[i][j] * R[k][j];
-      if (fabs(X1[i][k] - sum) > 1e-3)
-        check += (X1[i][k] - sum) * (X1[i][k] - sum);
+  double check = 0;
+  double sum;
+  for (int r=0;r<nrows; r++) {
+    for (int c=0; c<ncols; c++) {
+      sum=0;
+      for (int c2=0; c2<ncols; c2++)
+        sum += L[r][c2] * R[c][c2];
+      if (fabs(X1[r][c] - sum) > 1e-3)
+        check += (X1[r][c] - sum) * (X1[r][c] - sum);
     }
   }
+  check = sqrt(check); // rmse
 
   free(R);
   free(L);
@@ -136,20 +136,20 @@ void write_matrix(const char *fname, double** matrix, int nrows, int ncols)
 }
 
 // load matrix from an ascii text file.
-double** load_matrix(const char *fname, int n, int m)
+double** load_matrix(const char *fname, int nrows, int ncols)
 {
   ifstream is(fname);
   const string delim = ",";
 
   string line, strnum;
-  double **matrix = allocMat(n, m, 0);
+  double **matrix = allocMat(nrows, ncols, 0);
 
-  for (int j=0; j<n; j++) {
+  for (int r=0; r<nrows; r++) {
     getline(is, line);
     // matrix->push_back(vector<double>());
     int countCol = 0;
     for (string::const_iterator i = line.begin(); i != line.end(); ++ i) {
-      if (countCol==m) break;
+      if (countCol == ncols) break;
 
       // If i is not a delim, then append it to strnum
       if (delim.find(*i) == string::npos) {
@@ -166,7 +166,7 @@ double** load_matrix(const char *fname, int n, int m)
 
       istringstream(strnum) >> number;
       // matrix->back().push_back(number);
-      matrix[j][countCol] = number;
+      matrix[r][countCol] = number;
       strnum.clear();
       countCol++;
     }
