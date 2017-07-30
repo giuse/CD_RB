@@ -64,9 +64,13 @@ static double norm2 (double *C, int size)
 }
 
 /* The  centroid decomposition algorithm*/
-void centroidDec(double **X,  int n, int m, int truncated,
-                 const char* matrixR, const char* matrixL)
+void centroidDec(double **X,  int n, int m, int truncated)
 {
+  // matrixR is the file path of the matrix R
+  char const * matrixR="./Rtest.txt";
+  // matrixL is the file path of the matrix L
+  char const * matrixL="./Ltest.txt";
+
   double **R = allocMat(m, m, 0);
   double **L = allocMat(n, m, 0);
   int *Z;
