@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
   const char *matfile = argv[1];
 
   /* load the file into a matrix*/
-  double **matrix = load_matrix(matfile, nrows, ncols);
+  double *matrix = load_matrix(matfile, nrows, ncols);
 
   // number of truncated columns
   int ntrunc = atoi(argv[6]);
