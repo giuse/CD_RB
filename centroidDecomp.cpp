@@ -1,11 +1,9 @@
 #include <math.h>   // fabs
 #include <string.h> // strtok
+#include <stdio.h>
+#include <stdlib.h>
 
-// #include <sstream>
-#include <fstream>
 #include "centroidDecomp.hpp"
-using namespace std;
-
 
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
 static int* findSignVector (double **X, int nrows, int ncols)
@@ -124,16 +122,13 @@ void centroidDec(double **X,  int nrows, int ncols, int truncated)
 
 void write_matrix(const char *fname, double** matrix, int nrows, int ncols)
 {
-  ofstream is;
-  is.open(fname, ofstream::out | ofstream::trunc);
-  for (int i=0; i<nrows; i++) {
-    for (int j=0; j<ncols; j++) {
-      is << matrix[i][j];
-      is << ",";
-    }
-    is << endl;
+  FILE *file = fopen(fname, "wb");
+  for (int r=0; r<nrows; r++) {
+    for (int c=0; c<ncols; c++)
+      fprintf(file, "%g,", matrix[r][c]);
+    fprintf(file, "\n");
   }
-  is.close();
+  fclose(file);
 }
 
 // load matrix from an ascii text file.
