@@ -23,7 +23,7 @@ test: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(TESTMAIN) $(OBJECTS)
 	# Switch the next row to inject gdb markers in the executable
-	# $(CC) $(LDFLAGS) $(GDBFLAGS) $(OBJECTS) -o $@
+	# $(CC) $(GDBFLAGS) $(OBJECTS) $(TESTMAIN) -o $@ $(LDFLAGS)
 	$(CC) $(OBJECTS) $(TESTMAIN) -o $@ $(LDFLAGS)
 
 .cpp.o:

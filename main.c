@@ -15,11 +15,18 @@ int main(int argc, char *argv[])
   int ntrunc = atoi(argv[6]);
   int truncated = ncols - ntrunc;
 
+  // return arguments
+  double *L = allocDoubleVec(nrows * ncols, 0);
+  double *R = allocDoubleVec(ncols * ncols, 0);
+
   // centroid decomposition
-  centroidDec(matrix, nrows, ncols, truncated);
+  centroidDec(matrix, nrows, ncols, truncated, L, R);
 
   printf("ntrunc: `%d`; truncated: `%d`\n", ntrunc, truncated);
 
+  // closing up
+  free(R);
+  free(L);
   free(matrix);
   return 0;
 }

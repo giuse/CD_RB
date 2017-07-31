@@ -58,14 +58,13 @@ static double norm2 (double *ary, int size) {
 }
 
 /* The centroid decomposition algorithm*/
-void centroidDec(double *X,  int nrows, int ncols, int truncated)
+void centroidDec(double *X,  int nrows, int ncols, int truncated,
+                 double *L, double *R)
 {
   // results file paths (for testing)
-  char const * matrixR="./Rtest.txt";
   char const * matrixL="./Ltest.txt";
+  char const * matrixR="./Rtest.txt";
 
-  double *R = allocDoubleVec(ncols * ncols, 0);
-  double *L = allocDoubleVec(nrows * ncols, 0);
   int *Z;
 
   double *X1 = copyVec(X, nrows * ncols);
@@ -115,9 +114,6 @@ void centroidDec(double *X,  int nrows, int ncols, int truncated)
     }
   }
   check = sqrt(check); // rmse
-
-  free(R);
-  free(L);
 }
 
 void write_matrix(const char *fname, double* matrix, int nrows, int ncols)
