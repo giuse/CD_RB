@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
   // centroid decomposition
   centroidDec(matrix, nrows, ncols, truncated);
 
+  printf("ntrunc: `%d`; truncated: `%d`\n", ntrunc, truncated);
+
   free(matrix);
   return 0;
 }

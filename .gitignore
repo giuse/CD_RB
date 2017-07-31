@@ -12,7 +12,7 @@
 # Executables
 *.exe
 *.out
-test
+runme
 
 # Results
 runTime.txt
