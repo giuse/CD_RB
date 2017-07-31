@@ -1,2 +1,2 @@
 
-Centroid Decomposition in C, wrapped for Ruby.
+FFI Ruby wrapper for the pure-C implementation of Centroid Decomposition.
