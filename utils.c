@@ -1,7 +1,8 @@
 
-#include "utils.hpp"
+#include "utils.h"
 
-// debug utilities :( better tell this 2017 computer how to print a 2D array...
+// debug utilities :( better tell this 2017 language how to print a 2D array...
+
 void printMat(double **matrix, int nrows, int ncols) {
   printf("[");
   for (int r=0; r<nrows; r++) {

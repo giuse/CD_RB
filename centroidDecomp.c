@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "centroidDecomp.hpp"
+#include "centroidDecomp.h"
 
 /* find the sign vector that maximizes the product X'Z according to the SSV algorithm*/
 static int* findSignVector (double **X, int nrows, int ncols)

@@ -1,11 +1,11 @@
 
-CC=g++
-CFLAGS=-c -Wall -std=c++0x
+CC=gcc
+CFLAGS=-c -Wall
 GDBFLAGS=-g
-LDFLAGS=
+LDFLAGS=-lm
 RM=rm -f
-SOURCES=centroidDecomp.cpp utils.cpp main.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
+SOURCES=centroidDecomp.c utils.c main.c
+OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=test
 EXEC_OPTS=input.txt 20 10
 RESULTS=Ltest.txt Rtest.txt
@@ -18,7 +18,7 @@ all: clean $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	# Switch the next row to inject gdb markers in the executable
 	# $(CC) $(LDFLAGS) $(GDBFLAGS) $(OBJECTS) -o $@
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
