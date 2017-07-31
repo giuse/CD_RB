@@ -1,10 +1,14 @@
-// alloc utilities :( OMG I definitely did not miss C...
 
-#ifndef alloc_utils_hpp
-#define alloc_utils_hpp
+#ifndef utils_hpp
+#define utils_hpp
 
 #include <stdlib.h> // malloc
+#include <stdio.h>  // printf
 
+// debug utils
+void printMat(double **matrix, int nrows, int ncols);
+
+// alloc utilities :( OMG I definitely did not miss C...
 void initDoubleVec(double *vec, int size, double defval);
 void initIntVec(int *vec, int size, int defval);
 int* allocIntVec(int size, int defval);

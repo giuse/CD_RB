@@ -3,8 +3,8 @@
 #define centroidDecomp_hpp
 
 #include <stdlib.h> // atoi, free
+#include "utils.hpp" // init*Vec, alloc*Vec, allocMat, copyMat, printMat
 
-#include "allocUtils.hpp" // init*Vec, alloc*Vec, allocMat, copyMat
 
 void centroidDec( double **X, int n, int m, int truncated);
 double** load_matrix(const char *fname, int n, int m);

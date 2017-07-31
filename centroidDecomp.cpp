@@ -1,6 +1,7 @@
-#include <math.h> // fabs
+#include <math.h>   // fabs
+#include <string.h> // strtok
 
-#include <sstream>
+// #include <sstream>
 #include <fstream>
 #include "centroidDecomp.hpp"
 using namespace std;
@@ -138,40 +139,25 @@ void write_matrix(const char *fname, double** matrix, int nrows, int ncols)
 // load matrix from an ascii text file.
 double** load_matrix(const char *fname, int nrows, int ncols)
 {
-  ifstream is(fname);
-  const string delim = ",";
-
-  string line, strnum;
+  FILE* file = fopen(fname, "r");
+  const char *delim = ",";
+  char line[1024];        // buffer
+  char *ptr;              // pointer on line
   double **matrix = allocMat(nrows, ncols, 0);
+  int row = 0, col = 0;   // indices on matrix
 
-  for (int r=0; r<nrows; r++) {
-    getline(is, line);
-    // matrix->push_back(vector<double>());
-    int countCol = 0;
-    for (string::const_iterator i = line.begin(); i != line.end(); ++ i) {
-      if (countCol == ncols) break;
-
-      // If i is not a delim, then append it to strnum
-      if (delim.find(*i) == string::npos) {
-        strnum += *i;
-        // If it's the last char, do not continue
-        if (i + 1 != line.end()) continue;
-      }
-      // if strnum is still empty, it means the previous char is also a
-      // delim (several delims appear together). Ignore this char.
-      if (strnum.empty()) continue;
-
-      // If we reach here, we got a number. Convert it to double.
-      double number;
-
-      istringstream(strnum) >> number;
-      // matrix->back().push_back(number);
-      matrix[r][countCol] = number;
-      strnum.clear();
-      countCol++;
+  while (fgets(line, sizeof(line), file)) {
+    col = 0;
+    ptr = strtok(line, delim);      // split line by token
+    while (ptr != NULL) {
+        matrix[row][col++] = atof(ptr);
+        ptr = strtok(NULL, delim); // scan to next token
     }
+    row++;
   }
-  is.close();
+  // printMat(matrix, nrows, ncols);
+
+  fclose(file);
   return matrix;
 }
 

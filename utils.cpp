@@ -1,6 +1,19 @@
-// alloc utilities :( OMG I definitely did not miss C...
 
-#include <stdlib.h> // malloc, free
+#include "utils.hpp"
+
+// debug utilities :( better tell this 2017 computer how to print a 2D array...
+void printMat(double **matrix, int nrows, int ncols) {
+  printf("[");
+  for (int r=0; r<nrows; r++) {
+  printf(" [");
+    for (int c=0; c<ncols; c++)
+      printf("%f ", matrix[r][c]);
+    printf("]\n");
+  }
+  printf("]\n");
+}
+
+// alloc utilities :( OMG I definitely did not miss C...
 
 void initDoubleVec(double *vec, int size, double defval) {
   for (int i=0; i<size; i++) vec[i] = defval;
